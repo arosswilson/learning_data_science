@@ -1,1 +1,1 @@
-# learning_data_science
+# think_stats
