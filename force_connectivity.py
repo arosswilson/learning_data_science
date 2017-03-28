@@ -53,10 +53,18 @@ class Table(object):
         obj = constructor()
         for title, value in row.items():
             try:
-                val = float(val)
+                val = float(value)
             except:
                 val = value
 
+
+            if val == 'FALSE':
+                val = False
+            elif val == 'TRUE':
+                val = True
+
+            title = title.strip().lower().replace(' ', '_')
+            
             setattr(obj, title, val)
 
         return obj
@@ -93,11 +101,24 @@ class Cases(Table):
     def GetFilename(self):
         return 'force_connectivity_report.csv'
 
+    def get_number_of_sms_cases(self):
+        return len([case for case in self.records if case.accepted_sms])
+
+    def average_percent_of_outcomes_submitted(self):
+        percent = float(0)
+        for case in self.records:
+            percent += case.percent_outcomes_submitted
+            print(case.percent_outcomes_submitted)
+        return float(percent/len(self.records))
+
+
 def main(name, data_dir='.'):
     cases = Cases()
     cases.ReadRecords(data_dir)
 
     print('Number of cases %s'% len(cases.records))
+    print('number of cases accepted sms: %s'% cases.get_number_of_sms_cases())
+    print('avg outcomes submitted: %s'% cases.average_percent_of_outcomes_submitted())
 
 if __name__ == '__main__':
     main(*sys.argv)
